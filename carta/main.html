@@ -208,6 +208,14 @@
     }
 
     mainPhase = function () {
+        var data_active_false = document.querySelectorAll(".droppable[data-active=true]")
+        data_active_false.forEach((e) => {
+            e.removeEventListener("drop", (e))
+            e.setAttribute("data-active", "false")
+        })
+
+
+
         // arrrastas cartas draggables
         var current_card = undefined,
             current_player;
@@ -249,51 +257,52 @@
 
             }, false)
             //
-
-            //arrrasta alvos droppable
-            const $dropzone = document.querySelectorAll(".droppable");
-
-            $dropzone.forEach((dropzone) => {
-                dropzone.addEventListener("dragenter", (e) => {
-                    e.preventDefault();
-                });
-
-                dropzone.addEventListener("dragleave", (e) => {
-                    e.preventDefault();
-                });
-
-                dropzone.addEventListener("dragover", (e) => {
-                    e.preventDefault();
-                });
-
-                dropzone.addEventListener("drop", (e) => {
-                    if ((current_card.getAttribute("draggable") == "false") || dropzone
-                        .getAttribute(
-                            "data-active") == "true") {
-
-                    } else {
-                        if ((dropzone.getAttribute("data-player") == 1) && (
-                                current_player == 1)) {
-                            dropzone.append(current_card);
-                            current_card.setAttribute("draggable", "false");
-                            dropzone.dataset.active = true;
-                        } else if ((dropzone.getAttribute("data-player") == 2) && (
-                                current_player ==
-                                2)) {
-                            dropzone.append(current_card);
-                            current_card.setAttribute("draggable", "false");
-                            current_card.removeEventListener("dragstart", (e), false);
-                            current_card.removeEventListener("drag", (e), false);
-                            current_card.removeEventListener("dragend", (e), false);
-                            dropzone.dataset.active = true;
-                            current_card = undefined
-                        }
-                    }
-
-                });
-            })
-            //
         });
+
+        //arrrasta alvos droppable
+        const $dropzone = document.querySelectorAll(".droppable");
+
+        $dropzone.forEach((dropzone) => {
+            dropzone.addEventListener("dragenter", (e) => {
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener("dragleave", (e) => {
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener("drop", (e) => {
+                if ((current_card.getAttribute("draggable") == "false") || dropzone
+                    .getAttribute(
+                        "data-active") == "true") {
+
+                } else {
+                    if ((dropzone.getAttribute("data-player") == 1) && (
+                            current_player == 1)) {
+                        dropzone.append(current_card);
+                        current_card.setAttribute("draggable", "false");
+                        dropzone.dataset.active = true;
+                    } else if ((dropzone.getAttribute("data-player") == 2) && (
+                            current_player ==
+                            2)) {
+                        dropzone.append(current_card);
+                        current_card.setAttribute("draggable", "false");
+                        current_card.removeEventListener("dragstart", (e), false);
+                        current_card.removeEventListener("drag", (e), false);
+                        current_card.removeEventListener("dragend", (e), false);
+                        dropzone.dataset.active = true;
+                        current_card = undefined
+                    }
+                }
+
+            });
+        });
+        //
+
 
         current_phase = "battle";
 
@@ -317,22 +326,21 @@
 
 
 
-        const active_card = document.querySelectorAll('.droppable[data-active]');
+        const active_card = document.querySelectorAll('.droppable[data-active]>div');
 
         //
-
-
 
 
         active_card.forEach((active_card_drag) => {
             active_card_drag.setAttribute("draggable", "true");
 
-            active_card_drag.addEventListener("dragstart", (e) => {
+            var dragstart_battle_current_values = function (e) {
                 current_card = active_card_drag;
                 current_player = active_card_drag.getAttribute("data-player");
                 console.log(current_card)
+            }
 
-            }, false);
+            active_card_drag.addEventListener("dragstart", dragstart_battle_current_values(), false);
             active_card_drag.addEventListener("drag", (e) => {
 
             }, false);
@@ -355,11 +363,20 @@
 
             active_card_drag.addEventListener("drop", (e) => {
                 if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
-                        "data-player")) && (e.path[0].getAttribute("data-atk") > current_card
-                        .getAttribute("data-atk"))) {
-                    e.path[0].outerHTML = ""
-                    console.log("mama")
-
+                        "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) < parseInt(
+                        current_card
+                        .getAttribute("data-atk")))) {
+                    e.path[0].remove();
+                    current_card.setAttribute("draggable", "false");
+                    current_card.removeEventListener("dragstart",
+                        dragstart_battle_current_values());
+                    current_card = null;
+                } else if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
+                        "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) > parseInt(
+                        current_card
+                        .getAttribute("data-atk")))) {
+                    current_card.remove();
+                    current_card = null;
                 }
             })
         })
