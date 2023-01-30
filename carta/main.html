@@ -192,12 +192,14 @@
         //botao battle phase
         const $passPhase = document.createElement("div");
         $passPhase.setAttribute("id", "passPhase_button");
-        $passPhase.innerHTML = "Battle Phase";
+        $passPhase.innerHTML = "Main Phase";
         $passPhase.addEventListener("click", (e) => {
             if (current_phase == "main") {
                 mainPhase();
+                $passPhase.innerHTML = "Battle Phase";
             } else {
                 battlePhase();
+                $passPhase.innerHTML = "Main Phase";
             }
         }, false)
         $main.appendChild($passPhase);
@@ -292,6 +294,7 @@
             })
             //
         });
+
         current_phase = "battle";
 
     }
@@ -299,7 +302,7 @@
         console.log("mama")
         const disable_droppables = document.querySelectorAll(".droppable");
         disable_droppables.forEach((e) => {
-            console.log(e);
+            e.removeEventListener("drop", (e), false);
             //
 
         })
@@ -351,8 +354,8 @@
             });
 
             active_card_drag.addEventListener("drop", (e) => {
-                if ((e.path[0].getAttribute("data-player")) != current_card.getAttribute(
-                        "data-player") && (e.path[0].getAttribute("data-atk") > current_card
+                if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
+                        "data-player")) && (e.path[0].getAttribute("data-atk") > current_card
                         .getAttribute("data-atk"))) {
                     e.path[0].outerHTML = ""
                     console.log("mama")
