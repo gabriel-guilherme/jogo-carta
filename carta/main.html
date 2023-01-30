@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>carta?</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id="main"></div>
+</body>
+<script>
+    deck1 = [{
+            title: "Dragão Branco de Olhos Azuis",
+            atk: 3000,
+            def: 2500,
+            ilustration: "url(../carta/img/ilustracoes_cartas/BlueEyesWhiteDragon.png)"
+        },
+        {
+            title: "Minerva",
+            atk: 2000,
+            def: 800,
+            ilustration: "url(../carta/img/ilustracoes_cartas/Minerva.png)"
+        },
+        {
+            title: "Soldado do Lustro Negro",
+            atk: 3000,
+            def: 2500,
+            ilustration: "url(../carta/img/ilustracoes_cartas/LusterSoldier.png)"
+        },
+        {
+            title: "Cyber Stein",
+            atk: 700,
+            def: 500,
+            ilustration: "url(../carta/img/ilustracoes_cartas/CyberStein.png)"
+        },
+        {
+            title: "Slifer, o dragão dos céus",
+            atk: '?',
+            def: '?',
+            ilustration: "url(../carta/img/ilustracoes_cartas/Slifer.png)"
+        }
+    ]
+
+    deck2 = [{
+            title: "Mago Negro",
+            atk: 2500,
+            def: 2100,
+            ilustration: "url(../carta/img/ilustracoes_cartas/DarkMagician.png)"
+        },
+        {
+            title: "Dragão Negro de Olhos Vermelhos",
+            atk: 2400,
+            def: 2000,
+            ilustration: "url(../carta/img/ilustracoes_cartas/RedEyesBDragon.png)"
+        },
+        {
+            title: "Tyler, o grande guerreiro",
+            atk: 2000,
+            def: 800,
+            ilustration: "url(../carta/img/ilustracoes_cartas/TylerWarrior.png)"
+        },
+        {
+            title: "Obelisco, o Atormentador",
+            atk: 4000,
+            def: 4000,
+            ilustration: "url(../carta/img/ilustracoes_cartas/ObeliskTheTormentor.png)"
+        },
+        {
+            title: "Celtic Guardian",
+            atk: 1400,
+            def: 1200,
+            ilustration: "url(../carta/img/ilustracoes_cartas/CelticGuardian.png)"
+        }
+    ]
+
+    var current_phase = "main"
+    //criando main tela
+    const $main = document.querySelector("#main");
+    createMain_menu = function () {
+        const $main_buttons = document.createElement("div");
+        $main_buttons.classList.add("main_buttons");
+        $main.appendChild($main_buttons);
+
+        const $play_button = document.createElement('div');
+        const $edit_button = document.createElement('div');
+        $play_button.classList.add("play_button");
+        $edit_button.classList.add("edit_button");
+        $play_button.innerHTML = "PLAY";
+        $edit_button.innerHTML = "EDIT DECK";
+
+        $main_buttons.appendChild($play_button);
+        $main_buttons.appendChild($edit_button);
+
+        $play_button.addEventListener("click", createMatch, false);
+        $edit_button.addEventListener("click", editDeck, false);
+
+    }
+    //
+
+
+
+    createMatch = function () {
+        //limpa tela
+        const $main_buttons = document.querySelector(".main_buttons");
+        $main_buttons.remove();
+        //
+
+        //criar arena
+        const $arena = document.createElement("div");
+        $arena.setAttribute("id", "arena");
+        $main.appendChild($arena);
+
+        const $arena_droppable = document.createElement("div");
+        $arena_droppable.setAttribute("id", "arena_droppable");
+        $main.appendChild($arena_droppable);
+        //
+
+        //criar arena players
+        const $arena_player1 = document.createElement("div");
+        $arena_player1.classList.add("arena_players");
+        $arena_player1.setAttribute("id", "arena_player1");
+        $arena_droppable.appendChild($arena_player1);
+
+
+
+        const $arena_player2 = document.createElement("div");
+        $arena_player2.classList.add("arena_players")
+        $arena_player2.setAttribute("id", "arena_player2");
+        $arena_droppable.appendChild($arena_player2);
+        //
+
+        //criando espaços para carta na arena - player 1, player2
+        for (i = 0; i < 5; i++) {
+            let $div_arena = document.createElement("div");
+            $div_arena.classList.add("droppable");
+            $div_arena.dataset.player = "2";
+            $arena_player1.appendChild($div_arena);
+        }
+
+        for (i = 0; i < 5; i++) {
+            let $div_arena = document.createElement("div");
+            $div_arena.classList.add("droppable");
+            $div_arena.dataset.player = "1"
+            $arena_player2.appendChild($div_arena);
+        }
+        //
+
+
+
+        //cricao bancos player 1, player2
+        const $banco_1 = document.createElement("div");
+        $banco_1.classList.add("bancos");
+        $banco_1.setAttribute("id", "banco_1");
+        $arena.appendChild($banco_1);
+
+        const $banco_2 = document.createElement("div");
+        $banco_2.classList.add("bancos");
+        $banco_2.setAttribute("id", "banco_2");
+        $arena.appendChild($banco_2);
+
+        deck1.forEach((el, i) => {
+            let $div = document.createElement("div");
+            $div.dataset.name = el.title;
+            $div.dataset.player = "2";
+            $div.dataset.atk = el.atk;
+            $div.dataset.def = el.def;
+            $div.style.backgroundImage = el.ilustration;
+            $div.style.width = "139px";
+            $div.style.height = "203px";
+            $div.style.backgroundSize = "cover";
+            $div.style.transform = "scaleY(-1)";
+            $banco_1.appendChild($div);
+        })
+        deck2.forEach((el, i) => {
+            let $div = document.createElement("div");
+            $div.dataset.name = el.title;
+            $div.dataset.player = "1";
+            $div.dataset.atk = el.atk;
+            $div.dataset.def = el.def;
+            $div.style.backgroundImage = el.ilustration;
+            $div.style.width = "139px";
+            $div.style.height = "203px";
+            $div.style.backgroundSize = "cover";
+            $div.style.transform = "scaleY(1)"
+            $div.setAttribute("draggable", "true");
+            $banco_2.appendChild($div);
+        })
+
+        //botao battle phase
+        const $passPhase = document.createElement("div");
+        $passPhase.setAttribute("id", "passPhase_button");
+        $passPhase.innerHTML = "Battle Phase";
+        $passPhase.addEventListener("click", (e) => {
+            if (current_phase == "main") {
+                mainPhase();
+            } else {
+                battlePhase();
+            }
+        }, false)
+        $main.appendChild($passPhase);
+        //
+
+    }
+
+    mainPhase = function () {
+        // arrrastas cartas draggables
+        var current_card = undefined,
+            current_player;
+        let $div_player2 = document.querySelectorAll("#banco_1>div");
+        let $div_player1 = document.querySelectorAll("#banco_2>div");
+
+        $div_player2.forEach((draggable_card, i) => {
+
+            draggable_card.setAttribute("draggable", "true");
+
+            draggable_card.addEventListener("dragstart", (e) => {
+                current_card = draggable_card;
+                current_player = draggable_card.getAttribute("data-player");
+
+            }, false);
+            draggable_card.addEventListener("drag", (e) => {
+
+            }, false);
+            draggable_card.addEventListener("dragend", (e) => {
+
+            }, false)
+
+
+        });
+
+        $div_player1.forEach((draggable_card, i) => {
+
+            draggable_card.setAttribute("draggable", "true");
+
+            draggable_card.addEventListener("dragstart", (e) => {
+                current_card = draggable_card;
+                current_player = draggable_card.getAttribute("data-player");
+
+            }, false);
+            draggable_card.addEventListener("drag", (e) => {
+
+            }, false);
+            draggable_card.addEventListener("dragend", (e) => {
+
+            }, false)
+            //
+
+            //arrrasta alvos droppable
+            const $dropzone = document.querySelectorAll(".droppable");
+
+            $dropzone.forEach((dropzone) => {
+                dropzone.addEventListener("dragenter", (e) => {
+                    e.preventDefault();
+                });
+
+                dropzone.addEventListener("dragleave", (e) => {
+                    e.preventDefault();
+                });
+
+                dropzone.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                });
+
+                dropzone.addEventListener("drop", (e) => {
+                    if ((current_card.getAttribute("draggable") == "false") || dropzone
+                        .getAttribute(
+                            "data-active") == "true") {
+
+                    } else {
+                        if ((dropzone.getAttribute("data-player") == 1) && (
+                                current_player == 1)) {
+                            dropzone.append(current_card);
+                            current_card.setAttribute("draggable", "false");
+                            dropzone.dataset.active = true;
+                        } else if ((dropzone.getAttribute("data-player") == 2) && (
+                                current_player ==
+                                2)) {
+                            dropzone.append(current_card);
+                            current_card.setAttribute("draggable", "false");
+                            current_card.removeEventListener("dragstart", (e), false);
+                            current_card.removeEventListener("drag", (e), false);
+                            current_card.removeEventListener("dragend", (e), false);
+                            dropzone.dataset.active = true;
+                            current_card = undefined
+                        }
+                    }
+
+                });
+            })
+            //
+        });
+        current_phase = "battle";
+
+    }
+    battlePhase = function () {
+        console.log("mama")
+        const disable_droppables = document.querySelectorAll(".droppable");
+        disable_droppables.forEach((e) => {
+            console.log(e);
+            //
+
+        })
+
+        //desabilita bancos
+        const disable_banco = document.querySelectorAll(".bancos>div");
+        disable_banco.forEach((e) => {
+            e.setAttribute("draggable", "false");
+
+        })
+        //
+
+
+
+        const active_card = document.querySelectorAll('.droppable[data-active]');
+
+        //
+
+
+
+
+        active_card.forEach((active_card_drag) => {
+            active_card_drag.setAttribute("draggable", "true");
+
+            active_card_drag.addEventListener("dragstart", (e) => {
+                current_card = active_card_drag;
+                current_player = active_card_drag.getAttribute("data-player");
+                console.log(current_card)
+
+            }, false);
+            active_card_drag.addEventListener("drag", (e) => {
+
+            }, false);
+            active_card_drag.addEventListener("dragend", (e) => {
+
+            }, false)
+
+
+            active_card_drag.addEventListener("dragenter", (e) => {
+                e.preventDefault();
+            });
+
+            active_card_drag.addEventListener("dragleave", (e) => {
+                e.preventDefault();
+            });
+
+            active_card_drag.addEventListener("dragover", (e) => {
+                e.preventDefault();
+            });
+
+            active_card_drag.addEventListener("drop", (e) => {
+                if ((e.path[0].getAttribute("data-player")) != current_card.getAttribute(
+                        "data-player") && (e.path[0].getAttribute("data-atk") > current_card
+                        .getAttribute("data-atk"))) {
+                    e.path[0].outerHTML = ""
+                    console.log("mama")
+
+                }
+            })
+        })
+
+        current_phase = "main";
+    }
+    editDeck = function () {
+        const $main_buttons = document.querySelector(".main_buttons")
+        $main_buttons.remove();
+
+
+    }
+
+    createMain_menu();
+</script>
+
+
+
+
+
+
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+    }
+
+    #main {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background-color: aqua;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .main_buttons {
+        position: relative;
+        width: 800px;
+        height: 400px;
+        background: red;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .main_buttons div {
+        width: 250px;
+        height: 90px;
+        border: 3px solid black;
+        font-size: 45px;
+        text-align: center;
+        padding-top: 36px;
+    }
+
+    .play_button {
+        background-color: orange;
+    }
+
+    .edit_button {
+        background-color: green;
+    }
+
+    #arena {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    #passPhase_button {
+        position: absolute;
+        width: 200px;
+        height: 62px;
+        border: 4px solid orange;
+        top: 415px;
+        left: 1241px;
+        background: yellow;
+        text-align: center;
+        font-size: 36px;
+        padding-top: 15px;
+    }
+
+    #arena_droppable {
+        display: flex;
+        align-items: center;
+        background: black;
+        width: 60%;
+        height: 520px;
+        position: absolute;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    .arena_players {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    #arena_player1 {}
+
+    .droppable {
+        border: 1px solid white;
+        width: 139px;
+        height: 203px;
+    }
+
+    .bancos {
+        display: flex;
+        justify-content: space-between;
+        width: 60%;
+        height: 15%;
+        background: brown;
+        left: 20%;
+        position: relative;
+    }
+
+    #banco_2 div {
+        top: -63px;
+        position: relative;
+
+    }
+</style>
+
+</html>
