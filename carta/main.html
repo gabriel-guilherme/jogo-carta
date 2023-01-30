@@ -335,12 +335,14 @@
             active_card_drag.setAttribute("draggable", "true");
 
             var dragstart_battle_current_values = function (e) {
+
+            }
+
+            active_card_drag.addEventListener("dragstart", (e) => {
                 current_card = active_card_drag;
                 current_player = active_card_drag.getAttribute("data-player");
                 console.log(current_card)
-            }
-
-            active_card_drag.addEventListener("dragstart", dragstart_battle_current_values(), false);
+            }, false);
             active_card_drag.addEventListener("drag", (e) => {
 
             }, false);
@@ -368,8 +370,7 @@
                         .getAttribute("data-atk")))) {
                     e.path[0].remove();
                     current_card.setAttribute("draggable", "false");
-                    current_card.removeEventListener("dragstart",
-                        dragstart_battle_current_values());
+
                     current_card = null;
                 } else if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
                         "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) > parseInt(
@@ -462,7 +463,7 @@
         height: 62px;
         border: 4px solid orange;
         top: 415px;
-        left: 1241px;
+        left: 1500px;
         background: yellow;
         text-align: center;
         font-size: 36px;
