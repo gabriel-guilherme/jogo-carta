@@ -10,6 +10,7 @@
 
 <body>
     <div id="main"></div>
+
 </body>
 <script>
     deck1 = [{
@@ -58,7 +59,7 @@
         },
         {
             title: "Tyler, o grande guerreiro",
-            atk: 2000,
+            atk: 3000,
             def: 800,
             ilustration: "url(../carta/img/ilustracoes_cartas/TylerWarrior.png)"
         },
@@ -76,7 +77,74 @@
         }
     ]
 
-    var current_phase = "main"
+    var current_phase = "main";
+    var current_card = undefined,
+        current_player;
+    var dorpzone;
+    var attackInLife1;
+
+
+
+
+    //drop events para eventuais removes
+    var battle_drop_event = function (e) {
+        //console.log(e);
+        if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
+                "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) < parseInt(
+                current_card
+                .getAttribute("data-atk"))) && (current_card.getAttribute("draggable") ==
+                "true")) {
+            e.path[0].remove();
+            current_card.setAttribute("draggable", "false");
+
+            current_card = null;
+        } else if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
+                "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) > parseInt(
+                current_card
+                .getAttribute("data-atk"))) && (current_card.getAttribute("draggable") ==
+                "true")) {
+            current_card.remove();
+            current_card = null;
+        } else {
+
+        }
+    }
+
+
+    var main_drop_event = function (e) {
+        if ((current_card.getAttribute("draggable") == "false") || dorpzone
+            .getAttribute(
+                "data-active") == "true") {
+
+        } else {
+
+            if (dorpzone.children.length > 0) {
+                if (dorpzone.children[0].getAttribute("data-active") == "true") {
+
+                }
+            } else {
+                if ((dorpzone.getAttribute("data-player") == 1) && (
+                        current_player == 1)) {
+
+                    dorpzone.append(current_card);
+                    current_card.setAttribute("draggable", "false");
+                    dorpzone.dataset.active = true;
+
+                } else if ((dorpzone.getAttribute("data-player") == 2) && (
+                        current_player ==
+                        2)) {
+
+                    dorpzone.append(current_card);
+                    dorpzone.dataset.active = true;
+                    current_card = undefined ////////////////////////////////// atençao
+                }
+            }
+        }
+
+    }
+    //
+
+
     //criando main tela
     const $main = document.querySelector("#main");
     createMain_menu = function () {
@@ -172,6 +240,15 @@
             $div.style.height = "203px";
             $div.style.backgroundSize = "cover";
             $div.style.transform = "scaleY(-1)";
+
+            $div.addEventListener("mouseover", (e) => {
+                amplia_carta.style.backgroundImage = el.ilustration;
+            })
+
+            $div.addEventListener("mouseleave", (e) => {
+                amplia_carta.style.backgroundImage = "none";
+            })
+
             $banco_1.appendChild($div);
         })
         deck2.forEach((el, i) => {
@@ -185,6 +262,15 @@
             $div.style.height = "203px";
             $div.style.backgroundSize = "cover";
             $div.style.transform = "scaleY(1)"
+
+            $div.addEventListener("mouseover", (e) => {
+                amplia_carta.style.backgroundImage = el.ilustration;
+            })
+
+            $div.addEventListener("mouseleave", (e) => {
+                amplia_carta.style.backgroundImage = "none";
+            })
+
             $div.setAttribute("draggable", "true");
             $banco_2.appendChild($div);
         })
@@ -195,9 +281,27 @@
         $passPhase.innerHTML = "Main Phase";
         $passPhase.addEventListener("click", (e) => {
             if (current_phase == "main") {
+
+                let disable_battle_drop = document.querySelectorAll(".droppable");
+                disable_battle_drop.forEach((el) => {
+                    el.removeEventListener("drop", battle_drop_event);
+                })
+
+                let disable_active_cards = document.querySelectorAll(".droppable[data-active=true]");
+                disable_active_cards.forEach((disable) => {
+                    if (disable.children.length == 0) {
+                        disable.setAttribute("data-active", "false")
+                    }
+                })
                 mainPhase();
                 $passPhase.innerHTML = "Battle Phase";
             } else {
+
+                let disable_main_drop = document.querySelectorAll(".droppable");
+                disable_main_drop.forEach((el) => {
+                    el.removeEventListener("drop", main_drop_event);
+                })
+
                 battlePhase();
                 $passPhase.innerHTML = "Main Phase";
             }
@@ -205,20 +309,45 @@
         $main.appendChild($passPhase);
         //
 
+        //criaçao do amplia carta (zoom lateral das cartas)
+        const amplia_carta = document.createElement('div');
+        amplia_carta.classList = "amplia_carta";
+        $main.appendChild(amplia_carta);
+        //
+
+        //criaçao das vidas dos jogadores
+        const box_life_player = document.createElement("div");
+        box_life_player.setAttribute("id", "boxLifePlayer");
+
+        const life_player_1 = document.createElement("div");
+        life_player_1.classList = "playerLife";
+
+        const life_player_2 = document.createElement("div");
+        life_player_2.classList = "playerLife";
+
+
+        //drop life
+        //life_player_1.addEventListener("drop", attackInLife1);
+        //life_player_2.addEventListener("drop", attackInLife2);
+        //
+
+        box_life_player.appendChild(life_player_2);
+        box_life_player.appendChild(life_player_1)
+        $main.appendChild(box_life_player);
+        //
+
     }
 
     mainPhase = function () {
-        var data_active_false = document.querySelectorAll(".droppable[data-active=true]")
+        /*var data_active_false = document.querySelectorAll(".droppable[data-active=true]")
         data_active_false.forEach((e) => {
             e.removeEventListener("drop", (e))
             e.setAttribute("data-active", "false")
-        })
+        })*/
 
 
 
-        // arrrastas cartas draggables
-        var current_card = undefined,
-            current_player;
+        // arrrastas cartas draggable
         let $div_player2 = document.querySelectorAll("#banco_1>div");
         let $div_player1 = document.querySelectorAll("#banco_2>div");
 
@@ -256,13 +385,16 @@
             draggable_card.addEventListener("dragend", (e) => {
 
             }, false)
+
+
             //
         });
 
         //arrrasta alvos droppable
-        const $dropzone = document.querySelectorAll(".droppable");
 
+        const $dropzone = document.querySelectorAll(".droppable");
         $dropzone.forEach((dropzone) => {
+
             dropzone.addEventListener("dragenter", (e) => {
                 e.preventDefault();
             });
@@ -272,34 +404,11 @@
             });
 
             dropzone.addEventListener("dragover", (e) => {
+                dorpzone = dropzone;
                 e.preventDefault();
             });
 
-            dropzone.addEventListener("drop", (e) => {
-                if ((current_card.getAttribute("draggable") == "false") || dropzone
-                    .getAttribute(
-                        "data-active") == "true") {
-
-                } else {
-                    if ((dropzone.getAttribute("data-player") == 1) && (
-                            current_player == 1)) {
-                        dropzone.append(current_card);
-                        current_card.setAttribute("draggable", "false");
-                        dropzone.dataset.active = true;
-                    } else if ((dropzone.getAttribute("data-player") == 2) && (
-                            current_player ==
-                            2)) {
-                        dropzone.append(current_card);
-                        current_card.setAttribute("draggable", "false");
-                        current_card.removeEventListener("dragstart", (e), false);
-                        current_card.removeEventListener("drag", (e), false);
-                        current_card.removeEventListener("dragend", (e), false);
-                        dropzone.dataset.active = true;
-                        current_card = undefined
-                    }
-                }
-
-            });
+            dropzone.addEventListener("drop", main_drop_event);
         });
         //
 
@@ -308,7 +417,7 @@
 
     }
     battlePhase = function () {
-        console.log("mama")
+
         const disable_droppables = document.querySelectorAll(".droppable");
         disable_droppables.forEach((e) => {
             e.removeEventListener("drop", (e), false);
@@ -334,14 +443,11 @@
         active_card.forEach((active_card_drag) => {
             active_card_drag.setAttribute("draggable", "true");
 
-            var dragstart_battle_current_values = function (e) {
-
-            }
 
             active_card_drag.addEventListener("dragstart", (e) => {
                 current_card = active_card_drag;
                 current_player = active_card_drag.getAttribute("data-player");
-                console.log(current_card)
+
             }, false);
             active_card_drag.addEventListener("drag", (e) => {
 
@@ -363,24 +469,15 @@
                 e.preventDefault();
             });
 
-            active_card_drag.addEventListener("drop", (e) => {
-                if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
-                        "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) < parseInt(
-                        current_card
-                        .getAttribute("data-atk")))) {
-                    e.path[0].remove();
-                    current_card.setAttribute("draggable", "false");
-
-                    current_card = null;
-                } else if ((e.path[0].getAttribute("data-player") != current_card.getAttribute(
-                        "data-player")) && (parseInt(e.path[0].getAttribute("data-atk")) > parseInt(
-                        current_card
-                        .getAttribute("data-atk")))) {
-                    current_card.remove();
-                    current_card = null;
-                }
-            })
+            active_card_drag.addEventListener("drop", battle_drop_event);
         })
+
+        //attack in player life
+        /*attackInLife1 = function () {
+            if(current_card.getAttribute("data-player")!=  )
+        }*/
+
+        //
 
         current_phase = "main";
     }
@@ -463,7 +560,7 @@
         height: 62px;
         border: 4px solid orange;
         top: 415px;
-        left: 1500px;
+        left: 85%;
         background: yellow;
         text-align: center;
         font-size: 36px;
@@ -512,6 +609,37 @@
         position: relative;
 
     }
+
+    .amplia_carta {
+        position: absolute;
+        top: 232px;
+        left: 10px;
+        width: 270px;
+        height: 465px;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .playerLife {
+        width: 1860%;
+        height: 100px;
+        background-color: black;
+    }
+
+    #boxLifePlayer {
+        display: flex;
+        width: 1%;
+        left: 10px;
+        position: absolute;
+        height: 99%;
+        justify-content: space-between;
+        flex-direction: column;
+        z-index: 0;
+    }
+
+    #lifePlayer1 {}
+
+    #lifePlayer2 {}
 </style>
 
 </html>
