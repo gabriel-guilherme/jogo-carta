@@ -81,10 +81,13 @@
     var current_card = undefined,
         current_player;
     var dorpzone;
-    var attackInLife1;
+    var attackInLife1, attackInLife2;
 
-
-
+    //Fim partida
+    var endGameMatch = function () {
+        const $endButtonsBox = document.;
+    }
+    //
 
     //drop events para eventuais removes
     var battle_drop_event = function (e) {
@@ -94,6 +97,7 @@
                 current_card
                 .getAttribute("data-atk"))) && (current_card.getAttribute("draggable") ==
                 "true")) {
+            e.path[0].parentElement.setAttribute("data-active", "false");
             e.path[0].remove();
             current_card.setAttribute("draggable", "false");
 
@@ -103,6 +107,7 @@
                 current_card
                 .getAttribute("data-atk"))) && (current_card.getAttribute("draggable") ==
                 "true")) {
+            current_card.parentElement.setAttribute("data-active", "false");
             current_card.remove();
             current_card = null;
         } else {
@@ -117,7 +122,6 @@
                 "data-active") == "true") {
 
         } else {
-
             if (dorpzone.children.length > 0) {
                 if (dorpzone.children[0].getAttribute("data-active") == "true") {
 
@@ -141,6 +145,29 @@
             }
         }
 
+    }
+    //
+
+    //player damage drop
+    var damage_player_drop = function (e) {
+        let damage_opening = true;
+        let droppable_player = document.querySelectorAll(
+            `.droppable[data-player='${e.path[0].getAttribute("data-player")}']`)
+        droppable_player.forEach((el) => {
+            if (el.getAttribute("data-active") == "true") {
+                damage_opening = false;
+            }
+        })
+
+        if ((current_card.getAttribute("data-player") != e.path[0].getAttribute("data-player")) && (current_card
+                .getAttribute("draggable") == "true") && (damage_opening)) {
+            e.path[0].textContent -= current_card.getAttribute("data-atk");
+            current_card.setAttribute("draggable", "false");
+        }
+
+        if (e.path[0].textContent <= 0) {
+            endGameMatch();
+        }
     }
     //
 
@@ -171,6 +198,9 @@
 
 
     createMatch = function () {
+        var lifePlayer1 = 8000;
+        var lifePlayer2 = 8000;
+
         //limpa tela
         const $main_buttons = document.querySelector(".main_buttons");
         $main_buttons.remove();
@@ -293,7 +323,13 @@
                         disable.setAttribute("data-active", "false")
                     }
                 })
-                mainPhase();
+
+                let disable_life_damage = document.querySelectorAll(".playerLife");
+                disable_life_damage.forEach((disable) => {
+                    disable.removeEventListener("drop", damage_player_drop);
+                })
+
+                mainPhase(lifePlayer1, lifePlayer2);
                 $passPhase.innerHTML = "Battle Phase";
             } else {
 
@@ -302,7 +338,7 @@
                     el.removeEventListener("drop", main_drop_event);
                 })
 
-                battlePhase();
+                battlePhase(lifePlayer1, lifePlayer2);
                 $passPhase.innerHTML = "Main Phase";
             }
         }, false)
@@ -316,29 +352,29 @@
         //
 
         //criaçao das vidas dos jogadores
-        const box_life_player = document.createElement("div");
-        box_life_player.setAttribute("id", "boxLifePlayer");
+        const $box_life_player = document.createElement("div");
+        $box_life_player.setAttribute("id", "boxLifePlayer");
 
-        const life_player_1 = document.createElement("div");
-        life_player_1.classList = "playerLife";
+        const $life_player_1 = document.createElement("div");
+        $life_player_1.classList = "playerLife";
+        $life_player_1.setAttribute("data-player", "1");
 
-        const life_player_2 = document.createElement("div");
-        life_player_2.classList = "playerLife";
+        const $life_player_2 = document.createElement("div");
+        $life_player_2.classList = "playerLife";
+        $life_player_2.setAttribute("data-player", "2");
 
 
-        //drop life
-        //life_player_1.addEventListener("drop", attackInLife1);
-        //life_player_2.addEventListener("drop", attackInLife2);
-        //
+        $life_player_1.innerHTML = lifePlayer1;
+        $life_player_2.innerHTML = lifePlayer2;
 
-        box_life_player.appendChild(life_player_2);
-        box_life_player.appendChild(life_player_1)
-        $main.appendChild(box_life_player);
+        $box_life_player.appendChild($life_player_2);
+        $box_life_player.appendChild($life_player_1);
+        $main.appendChild($box_life_player);
         //
 
     }
 
-    mainPhase = function () {
+    mainPhase = function (life1, life2) {
         /*var data_active_false = document.querySelectorAll(".droppable[data-active=true]")
         data_active_false.forEach((e) => {
             e.removeEventListener("drop", (e))
@@ -416,7 +452,7 @@
         current_phase = "battle";
 
     }
-    battlePhase = function () {
+    battlePhase = function (life1, life2) {
 
         const disable_droppables = document.querySelectorAll(".droppable");
         disable_droppables.forEach((e) => {
@@ -478,6 +514,38 @@
         }*/
 
         //
+
+        //drop life
+        let life_player_1 = document.querySelector(".playerLife[data-player='1']");
+        let life_player_2 = document.querySelector(".playerLife[data-player='2']");
+
+
+        life_player_1.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+        });
+        life_player_1.addEventListener("dragleave", (e) => {
+            e.preventDefault();
+        });
+        life_player_1.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+        life_player_1.addEventListener("drop", damage_player_drop);
+
+
+
+
+
+        life_player_2.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+        });
+        life_player_2.addEventListener("dragleave", (e) => {
+            e.preventDefault();
+        });
+        life_player_2.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+        life_player_2.addEventListener("drop", damage_player_drop);
+
 
         current_phase = "main";
     }
@@ -624,6 +692,7 @@
         width: 1860%;
         height: 100px;
         background-color: black;
+        color: white;
     }
 
     #boxLifePlayer {
@@ -636,6 +705,8 @@
         flex-direction: column;
         z-index: 0;
     }
+
+
 
     #lifePlayer1 {}
 
