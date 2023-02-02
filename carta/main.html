@@ -77,7 +77,7 @@
         }
     ]
 
-    var current_phase = "main";
+    var current_phase;
     var current_card = undefined,
         current_player;
     var dorpzone;
@@ -87,7 +87,7 @@
     var endGameMatch = function () {
         const $endButtonsBox = document.createElement("div");
         $endButtonsBox.setAttribute("id", "endgame-box");
-        $main.appendChild($endButtonsBox);
+        document.body.appendChild($endButtonsBox);
 
         const $endMainMenuButton = document.createElement("div");
         $endMainMenuButton.classList = "end_game_button";
@@ -100,6 +100,13 @@
         $endPlayAgainButton.setAttribute("id", "endGame-playAgain-button");
         $endPlayAgainButton.innerHTML = "Play Again";
         $endButtonsBox.appendChild($endPlayAgainButton);
+
+        $main.style.filter = "brightness(40%)";
+
+
+
+        $endMainMenuButton.addEventListener("click", createMain_menu);
+        $endPlayAgainButton.addEventListener("click", createMatch);
     }
     //
 
@@ -189,6 +196,15 @@
     //criando main tela
     const $main = document.querySelector("#main");
     createMain_menu = function () {
+        $main.innerHTML = "";
+        if (document.querySelector("#endgame-box") == null) {
+
+        } else {
+            document.querySelector("#endgame-box").remove();
+            $main.style.filter = "brightness(100%)";
+        }
+
+
         const $main_buttons = document.createElement("div");
         $main_buttons.classList.add("main_buttons");
         $main.appendChild($main_buttons);
@@ -211,13 +227,197 @@
 
 
 
+
+    mainPhase = function (life1, life2) {
+        /*var data_active_false = document.querySelectorAll(".droppable[data-active=true]")
+        data_active_false.forEach((e) => {
+            e.removeEventListener("drop", (e))
+            e.setAttribute("data-active", "false")
+        })*/
+
+
+        // arrrastas cartas draggable
+        let $div_player2 = document.querySelectorAll("#banco_1>div");
+        let $div_player1 = document.querySelectorAll("#banco_2>div");
+
+        $div_player2.forEach((draggable_card, i) => {
+
+            draggable_card.setAttribute("draggable", "true");
+
+            draggable_card.addEventListener("dragstart", (e) => {
+                current_card = draggable_card;
+                current_player = draggable_card.getAttribute("data-player");
+
+            }, false);
+            draggable_card.addEventListener("drag", (e) => {
+
+            }, false);
+            draggable_card.addEventListener("dragend", (e) => {
+
+            }, false)
+
+
+        });
+
+        $div_player1.forEach((draggable_card, i) => {
+
+            draggable_card.setAttribute("draggable", "true");
+
+            draggable_card.addEventListener("dragstart", (e) => {
+                current_card = draggable_card;
+                current_player = draggable_card.getAttribute("data-player");
+
+            }, false);
+            draggable_card.addEventListener("drag", (e) => {
+
+            }, false);
+            draggable_card.addEventListener("dragend", (e) => {
+
+            }, false)
+
+
+            //
+        });
+
+        //arrrasta alvos droppable
+
+        const $dropzone = document.querySelectorAll(".droppable");
+        $dropzone.forEach((dropzone) => {
+
+            dropzone.addEventListener("dragenter", (e) => {
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener("dragleave", (e) => {
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener("dragover", (e) => {
+                dorpzone = dropzone;
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener("drop", main_drop_event);
+        });
+        //
+
+
+        current_phase = "battle";
+
+    }
+    battlePhase = function (life1, life2) {
+
+        const disable_droppables = document.querySelectorAll(".droppable");
+        disable_droppables.forEach((e) => {
+            e.removeEventListener("drop", (e), false);
+            //
+
+        })
+
+        //desabilita bancos
+        const disable_banco = document.querySelectorAll(".bancos>div");
+        disable_banco.forEach((e) => {
+            e.setAttribute("draggable", "false");
+
+        })
+        //
+
+
+
+        const active_card = document.querySelectorAll('.droppable[data-active]>div');
+
+        //
+
+
+        active_card.forEach((active_card_drag) => {
+            active_card_drag.setAttribute("draggable", "true");
+
+
+            active_card_drag.addEventListener("dragstart", (e) => {
+                current_card = active_card_drag;
+                current_player = active_card_drag.getAttribute("data-player");
+
+            }, false);
+            active_card_drag.addEventListener("drag", (e) => {
+
+            }, false);
+            active_card_drag.addEventListener("dragend", (e) => {
+
+            }, false)
+
+
+            active_card_drag.addEventListener("dragenter", (e) => {
+                e.preventDefault();
+            });
+
+            active_card_drag.addEventListener("dragleave", (e) => {
+                e.preventDefault();
+            });
+
+            active_card_drag.addEventListener("dragover", (e) => {
+                e.preventDefault();
+            });
+
+            active_card_drag.addEventListener("drop", battle_drop_event);
+        })
+
+        //attack in player life
+        /*attackInLife1 = function () {
+            if(current_card.getAttribute("data-player")!=  )
+        }*/
+
+        //
+
+        //drop life
+        let life_player_1 = document.querySelector(".playerLife[data-player='1']");
+        let life_player_2 = document.querySelector(".playerLife[data-player='2']");
+
+
+        life_player_1.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+        });
+        life_player_1.addEventListener("dragleave", (e) => {
+            e.preventDefault();
+        });
+        life_player_1.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+        life_player_1.addEventListener("drop", damage_player_drop);
+
+
+
+
+
+        life_player_2.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+        });
+        life_player_2.addEventListener("dragleave", (e) => {
+            e.preventDefault();
+        });
+        life_player_2.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+        life_player_2.addEventListener("drop", damage_player_drop);
+
+
+        current_phase = "main";
+    }
+
+
     createMatch = function () {
+        current_phase = "main";
         var lifePlayer1 = 8000;
         var lifePlayer2 = 8000;
 
         //limpa tela
         const $main_buttons = document.querySelector(".main_buttons");
-        $main_buttons.remove();
+        if ($main_buttons == null) {
+            document.querySelector("#endgame-box").remove();
+            $main.style.filter = "brightness(100%)";
+            $main.innerHTML = "";
+        } else {
+            $main_buttons.remove();
+        }
         //
 
         //criar arena
@@ -387,182 +587,6 @@
         //
 
     }
-
-    mainPhase = function (life1, life2) {
-        /*var data_active_false = document.querySelectorAll(".droppable[data-active=true]")
-        data_active_false.forEach((e) => {
-            e.removeEventListener("drop", (e))
-            e.setAttribute("data-active", "false")
-        })*/
-
-
-
-        // arrrastas cartas draggable
-        let $div_player2 = document.querySelectorAll("#banco_1>div");
-        let $div_player1 = document.querySelectorAll("#banco_2>div");
-
-        $div_player2.forEach((draggable_card, i) => {
-
-            draggable_card.setAttribute("draggable", "true");
-
-            draggable_card.addEventListener("dragstart", (e) => {
-                current_card = draggable_card;
-                current_player = draggable_card.getAttribute("data-player");
-
-            }, false);
-            draggable_card.addEventListener("drag", (e) => {
-
-            }, false);
-            draggable_card.addEventListener("dragend", (e) => {
-
-            }, false)
-
-
-        });
-
-        $div_player1.forEach((draggable_card, i) => {
-
-            draggable_card.setAttribute("draggable", "true");
-
-            draggable_card.addEventListener("dragstart", (e) => {
-                current_card = draggable_card;
-                current_player = draggable_card.getAttribute("data-player");
-
-            }, false);
-            draggable_card.addEventListener("drag", (e) => {
-
-            }, false);
-            draggable_card.addEventListener("dragend", (e) => {
-
-            }, false)
-
-
-            //
-        });
-
-        //arrrasta alvos droppable
-
-        const $dropzone = document.querySelectorAll(".droppable");
-        $dropzone.forEach((dropzone) => {
-
-            dropzone.addEventListener("dragenter", (e) => {
-                e.preventDefault();
-            });
-
-            dropzone.addEventListener("dragleave", (e) => {
-                e.preventDefault();
-            });
-
-            dropzone.addEventListener("dragover", (e) => {
-                dorpzone = dropzone;
-                e.preventDefault();
-            });
-
-            dropzone.addEventListener("drop", main_drop_event);
-        });
-        //
-
-
-        current_phase = "battle";
-
-    }
-    battlePhase = function (life1, life2) {
-
-        const disable_droppables = document.querySelectorAll(".droppable");
-        disable_droppables.forEach((e) => {
-            e.removeEventListener("drop", (e), false);
-            //
-
-        })
-
-        //desabilita bancos
-        const disable_banco = document.querySelectorAll(".bancos>div");
-        disable_banco.forEach((e) => {
-            e.setAttribute("draggable", "false");
-
-        })
-        //
-
-
-
-        const active_card = document.querySelectorAll('.droppable[data-active]>div');
-
-        //
-
-
-        active_card.forEach((active_card_drag) => {
-            active_card_drag.setAttribute("draggable", "true");
-
-
-            active_card_drag.addEventListener("dragstart", (e) => {
-                current_card = active_card_drag;
-                current_player = active_card_drag.getAttribute("data-player");
-
-            }, false);
-            active_card_drag.addEventListener("drag", (e) => {
-
-            }, false);
-            active_card_drag.addEventListener("dragend", (e) => {
-
-            }, false)
-
-
-            active_card_drag.addEventListener("dragenter", (e) => {
-                e.preventDefault();
-            });
-
-            active_card_drag.addEventListener("dragleave", (e) => {
-                e.preventDefault();
-            });
-
-            active_card_drag.addEventListener("dragover", (e) => {
-                e.preventDefault();
-            });
-
-            active_card_drag.addEventListener("drop", battle_drop_event);
-        })
-
-        //attack in player life
-        /*attackInLife1 = function () {
-            if(current_card.getAttribute("data-player")!=  )
-        }*/
-
-        //
-
-        //drop life
-        let life_player_1 = document.querySelector(".playerLife[data-player='1']");
-        let life_player_2 = document.querySelector(".playerLife[data-player='2']");
-
-
-        life_player_1.addEventListener("dragenter", (e) => {
-            e.preventDefault();
-        });
-        life_player_1.addEventListener("dragleave", (e) => {
-            e.preventDefault();
-        });
-        life_player_1.addEventListener("dragover", (e) => {
-            e.preventDefault();
-        });
-        life_player_1.addEventListener("drop", damage_player_drop);
-
-
-
-
-
-        life_player_2.addEventListener("dragenter", (e) => {
-            e.preventDefault();
-        });
-        life_player_2.addEventListener("dragleave", (e) => {
-            e.preventDefault();
-        });
-        life_player_2.addEventListener("dragover", (e) => {
-            e.preventDefault();
-        });
-        life_player_2.addEventListener("drop", damage_player_drop);
-
-
-        current_phase = "main";
-    }
     editDeck = function () {
         const $main_buttons = document.querySelector(".main_buttons")
         $main_buttons.remove();
@@ -597,6 +621,7 @@
         background-color: aqua;
         align-items: center;
         justify-content: space-around;
+        position: absolute;
     }
 
     .main_buttons {
@@ -707,6 +732,11 @@
         height: 100px;
         background-color: black;
         color: white;
+    }
+
+    .playerLife[data-player="2"] {
+        position: relative;
+        left: 8000%;
     }
 
     #boxLifePlayer {
