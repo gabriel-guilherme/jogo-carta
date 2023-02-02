@@ -180,6 +180,7 @@
 
     //Main phase puxar 1 carta
     var mainPhasePullCard = function (e) {
+        console.log(e)
         let bancoPlayer = document.querySelector(`#banco_${e.path[0].getAttribute("data-player")}`);
         e.path[0].firstChild.style.display = "block";
         bancoPlayer.appendChild(e.path[0].firstChild);
@@ -200,6 +201,9 @@
 
             document.querySelector(`.lifePlayer[data-player='${e.path[0].getAttribute("data-player")}']`)
                 .textContent -= (current_card.getAttribute("data-atk") - e.path[0].getAttribute("data-atk"));
+                if(document.querySelector(`.lifePlayer[data-player='${e.path[0].getAttribute("data-player")}']`).textContent<=0){
+                    endGameMatch();
+                }
 
             e.path[0].remove();
 
@@ -274,6 +278,7 @@
             current_card.setAttribute("draggable", "false");
         }
 
+        console.log(e.path[0].textContent)
         if (e.path[0].textContent <= 0) {
             endGameMatch();
         }
