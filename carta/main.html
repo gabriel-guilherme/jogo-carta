@@ -42,6 +42,36 @@
             atk: '?',
             def: '?',
             ilustration: "url(../carta/img/ilustracoes_cartas/Slifer.png)"
+        },
+        {
+            title: "Castor Guerreiro",
+            atk: '1200',
+            def: '1500',
+            ilustration: "url(../carta/img/ilustracoes_cartas/BeaverWarrior.png)"
+        },
+        {
+            title: "Caveira Invocada",
+            atk: '2500',
+            def: '1200',
+            ilustration: "url(../carta/img/ilustracoes_cartas/CaveiraInvocada.png)"
+        },
+        {
+            title: "Maldição do Dragão",
+            atk: '2000',
+            def: '1500',
+            ilustration: "url(../carta/img/ilustracoes_cartas/CurseDragon.png)"
+        },
+        {
+            title: "Diabrete Selvagem",
+            atk: '1300',
+            def: '1400',
+            ilustration: "url(../carta/img/ilustracoes_cartas/FeralImp.png)"
+        },
+        {
+            title: "Gaia, o Cavaleiro Impetuoso",
+            atk: '2300',
+            def: '2100',
+            ilustration: "url(../carta/img/ilustracoes_cartas/GaiaKnight.png)"
         }
     ]
 
@@ -74,6 +104,36 @@
             atk: 1400,
             def: 1200,
             ilustration: "url(../carta/img/ilustracoes_cartas/CelticGuardian.png)"
+        },
+        {
+            title: "O Grande Branco",
+            atk: 1600,
+            def: 800,
+            ilustration: "url(../carta/img/ilustracoes_cartas/GreatWhite.png)"
+        },
+        {
+            title: "Cemitério de Mamutes",
+            atk: 1200,
+            def: 800,
+            ilustration: "url(../carta/img/ilustracoes_cartas/MammothGraveyard.png)"
+        },
+        {
+            title: "Elfa Mística",
+            atk: 800,
+            def: 2000,
+            ilustration: "url(../carta/img/ilustracoes_cartas/MysticalElf.png)"
+        },
+        {
+            title: "Pote da Ganância",
+            atk: 9999,
+            def: 9999,
+            ilustration: "url(../carta/img/ilustracoes_cartas/PotOfGreed.png)"
+        },
+        {
+            title: "Dragão Alado, Guardião da Fortaleza N°1",
+            atk: 1400,
+            def: 1200,
+            ilustration: "url(../carta/img/ilustracoes_cartas/WingedDragon.png)"
         }
     ]
 
@@ -107,6 +167,15 @@
 
         $endMainMenuButton.addEventListener("click", createMain_menu);
         $endPlayAgainButton.addEventListener("click", createMatch);
+    }
+    //
+
+    //Main phase puxar 1 carta
+    var mainPhasePushCard = function (e) {
+        let bancoPlayer = document.querySelector(`#banco_${e.path[0].getAttribute("data-player")}`);
+        e.path[0].firstChild.style.display = "initial";
+        bancoPlayer.appendChild(e.path[0].firstChild);
+        e.path[0].removeEventListener("click", mainPhasePushCard);
     }
     //
 
@@ -301,7 +370,10 @@
         });
         //
 
-
+        const deckStoragesMainPhase = document.querySelectorAll(".deck-storage");
+        deckStoragesMainPhase.forEach((el) => {
+            el.addEventListener("click", mainPhasePushCard);
+        });
         current_phase = "battle";
 
     }
@@ -406,6 +478,7 @@
 
     createMatch = function () {
         current_phase = "main";
+        var deckCount = 0;
         var lifePlayer1 = 8000;
         var lifePlayer2 = 8000;
 
@@ -419,6 +492,35 @@
             $main_buttons.remove();
         }
         //
+
+        //Criando deck storages
+        const $deckStorage1 = document.createElement("div");
+        $deckStorage1.classList.add("deck-storage");
+        $deckStorage1.setAttribute("data-player", "1");
+
+        const $deckStorage2 = document.createElement("div");
+        $deckStorage2.classList.add("deck-storage");
+        $deckStorage2.setAttribute("data-player", "2");
+
+        const $deckStorageBoxHalf1 = document.createElement("div");
+        $deckStorageBoxHalf1.classList.add("deck-storage-box-half");
+        $deckStorageBoxHalf1.setAttribute("data-player", "1");
+
+        const $deckStorageBoxHalf2 = document.createElement("div");
+        $deckStorageBoxHalf2.classList.add("deck-storage-box-half");
+        $deckStorageBoxHalf2.setAttribute("data-player", "2");
+
+        const $deckStorageBox = document.createElement("div");
+        $deckStorageBox.setAttribute("id", "deck-storage-box");
+
+
+        $deckStorageBoxHalf1.appendChild($deckStorage1);
+        $deckStorageBoxHalf2.appendChild($deckStorage2);
+        $deckStorageBox.appendChild($deckStorageBoxHalf2);
+        $deckStorageBox.appendChild($deckStorageBoxHalf1);
+        $main.appendChild($deckStorageBox);
+        //
+
 
         //criar arena
         const $arena = document.createElement("div");
@@ -462,16 +564,20 @@
 
 
 
+
         //cricao bancos player 1, player2
         const $banco_1 = document.createElement("div");
         $banco_1.classList.add("bancos");
         $banco_1.setAttribute("id", "banco_1");
-        $arena.appendChild($banco_1);
+
 
         const $banco_2 = document.createElement("div");
         $banco_2.classList.add("bancos");
         $banco_2.setAttribute("id", "banco_2");
+
+
         $arena.appendChild($banco_2);
+        $arena.appendChild($banco_1);
 
         deck1.forEach((el, i) => {
             let $div = document.createElement("div");
@@ -493,8 +599,16 @@
                 amplia_carta.style.backgroundImage = "none";
             })
 
-            $banco_1.appendChild($div);
+            if (deckCount < 4) {
+                $banco_2.appendChild($div);
+            } else {
+                $div.style.display = "none";
+                const $deckStorage = document.querySelector(".deck-storage[data-player='2'");
+                $deckStorage.appendChild($div);
+            }
+            deckCount++;
         })
+        deckCount = 0;
         deck2.forEach((el, i) => {
             let $div = document.createElement("div");
             $div.dataset.name = el.title;
@@ -516,7 +630,15 @@
             })
 
             $div.setAttribute("draggable", "true");
-            $banco_2.appendChild($div);
+
+            if (deckCount < 4) {
+                $banco_1.appendChild($div);
+            } else {
+                $div.style.display = "none";
+                const $deckStorage = document.querySelector(".deck-storage[data-player='1'");
+                $deckStorage.appendChild($div);
+            }
+            deckCount++;
         })
 
         //botao battle phase
@@ -711,7 +833,7 @@
         position: relative;
     }
 
-    #banco_2 div {
+    #banco_1 div {
         top: -63px;
         position: relative;
 
@@ -747,14 +869,49 @@
         height: 99%;
         justify-content: space-between;
         flex-direction: column;
-        z-index: 0;
     }
 
+    #deck-storage-box {
+        display: flex;
+        width: 99%;
+        height: 100%;
+        left: 10px;
+        position: absolute;
+        justify-content: space-between;
+        flex-direction: column;
+    }
+
+    .deck-storage-box-half {
+        width: 100%;
+        height: 50%;
+        display: flex;
+        align-items: center;
+    }
+
+    .deck-storage-box-half[data-player="1"] {
+        flex-direction: row-reverse;
+    }
+
+    .deck-storage {
+        width: 12%;
+        height: 51%;
+        background-image: url(../carta/img/ilustracoes_cartas/card_back.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        color: white;
+        position: relative;
+    }
+
+    .deck-storage[data-player="2"] {
+        left: 3%;
+    }
 
 
     #lifePlayer1 {}
 
     #lifePlayer2 {}
+
+
 
     #endgame-box {
         position: absolute;
