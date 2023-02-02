@@ -3,12 +3,20 @@
 <html>
 
 <head>
-    <title>carta?</title>
+    <title>projeto-cardGame</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
+    <!-- REGRAS DO JOGO -->
+    <!--  
+        Cada jogador começa com 5 cartas. Quatro na mão e a opção de puxar uma a cada MAIN PHASE (o jogo inicia na main phase)
+        Cada jogador na main pode jogar quantas cartas em campo quiser
+        Passando a rodada temos a BATTLE PHASE onde acontece os combates entre cartas e vidas dos jogadores
+        Pode-se dar dano em um jogador somente se não houver nenhuma carta no campo dele e ganha quem zerar os pontos do adversário
+        Cada monstro só pode destruir uma carta do oponente por turno e se isso acontecer a diferença entre o dano do atacante contra o atacado será transferido para a vida do jogador atacado
+    -->
     <div id="main"></div>
 
 </body>
@@ -189,7 +197,14 @@
                 "true")) {
             e.path[0].parentElement.setAttribute("data-active", "false");
             e.path[0].parentElement.style.opacity = "0.3";
+
+            document.querySelector(`.lifePlayer[data-player='${e.path[0].getAttribute("data-player")}']`)
+                .textContent -= (current_card.getAttribute("data-atk") - e.path[0].getAttribute("data-atk"));
+
             e.path[0].remove();
+
+
+
             current_card.setAttribute("draggable", "false");
 
             current_card = null;
@@ -980,9 +995,14 @@
     }
 
     .end_game_button {
-        width: 100px;
-        height: 100px;
-        background: green;
+        width: 250px;
+        height: 90px;
+        border: 3px solid black;
+        font-size: 45px;
+        text-align: center;
+        padding-top: 36px;
+        background-color: #e9b216;
+        border-radius: 20px;
     }
 </style>
 
